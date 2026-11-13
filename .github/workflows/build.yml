@@ -19,5 +19,13 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
 
-    - name: Build with Gradle
-      run: gradle :app:assembleDebug --stacktrace
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Create Gradle Wrapper
+      run: |
+        gradle wrapper --gradle-version 8.5
+        chmod +x gradlew
+
+    - name: Build APK with Gradle
+      run: ./gradlew :app:assembleDebug --stacktrace
