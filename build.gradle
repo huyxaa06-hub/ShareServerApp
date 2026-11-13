@@ -3,11 +3,9 @@ buildscript {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url "https://chaquo.com/maven" }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:8.2.2"
-        classpath "com.chaquopy.python:gradle:14.0.3"
     }
 }
 
@@ -20,7 +18,6 @@ allprojects {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.chaquopy.python'
 
 android {
     namespace 'com.shareserver.app'
@@ -32,9 +29,5 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-    }
-
-    python {
-        buildPython "python3"
     }
 }
