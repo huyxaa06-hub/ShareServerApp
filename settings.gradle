@@ -3,14 +3,18 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven { url "https://maven.chaquopy.com" }
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
+        maven { url "https://maven.chaquopy.com" }
     }
 }
+
 rootProject.name = "ShareServerApp"
-//include ':app'
+// include ':app'
