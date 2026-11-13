@@ -1,4 +1,17 @@
 plugins {
-    id 'com.android.application' version '8.2.2' apply false
-    id 'com.chaquo.python' version '15.0.1' apply false
+    id 'com.android.application' version '8.2.2'
+    id 'com.chaquopy.python' version '15.0.1'
+}
+
+android {
+    namespace 'com.shareserver.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.shareserver.app"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
 }
