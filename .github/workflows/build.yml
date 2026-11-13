@@ -19,8 +19,5 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
 
-    - name: Build APK
-      run: |
-        gradle wrapper --gradle-version 8.5
-        chmod +x gradlew
-        ./gradlew :app:assembleDebug --stacktrace
+    - name: Build direct with Gradle
+      run: gradle :app:assembleDebug --stacktrace
