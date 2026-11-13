@@ -21,29 +21,23 @@ jobs:
 
     - name: Setup Android SDK manually
       run: |
-        # Tạo thư mục Android SDK
         mkdir -p $HOME/android-sdk/cmdline-tools
         cd $HOME/android-sdk/cmdline-tools
-        
-        # Tải công cụ commandlinetools chính thức từ Google
         curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
         unzip -q commandlinetools.zip
         mkdir -p latest
         mv cmdline-tools/* latest/ 2>/dev/null || true
-        
-        # Thiết lập biến môi trường ANDROID_HOME
         echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
         echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
         echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
-    - name: Accept Android licenses and install build-tools
+    - name: Accept licenses and install components
       run: |
         export ANDROID_HOME=$HOME/android-sdk
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-    - name: Build APK with Gradle
+    - name: Build Direct APK
       run: |
-        gradle wrapper --gradle-version 8.5
-        chmod +x gradlew
-        ./gradlew :app:assembleDebug --stacktrace
+        export ANDROID_HOME=$HOME/android-sdk
+        gradle :app:assembleDebug --stacktrace
