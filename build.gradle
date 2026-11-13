@@ -3,7 +3,7 @@ buildscript {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url "https://maven.chaquopy.com" }
+        maven { url "https://chaquo.com/maven" }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:8.2.2"
@@ -15,7 +15,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://maven.chaquopy.com" }
+        maven { url "https://chaquo.com/maven" }
     }
 }
 
