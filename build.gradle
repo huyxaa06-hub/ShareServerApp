@@ -1,23 +1,6 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath "com.android.tools.build:gradle:8.2.2"
-    }
+plugins {
+    id 'com.android.application' version '8.2.2'
 }
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://chaquo.com/maven" }
-    }
-}
-
-apply plugin: 'com.android.application'
 
 android {
     namespace 'com.shareserver.app'
