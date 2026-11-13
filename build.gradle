@@ -1,7 +1,26 @@
-plugins {
-    id 'com.android.application' version '8.2.2'
-    id 'com.chaquopy.python' version '15.0.1'
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url "https://maven.chaquopy.com" }
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.2.2"
+        classpath "com.chaquopy.python:gradle:15.0.1"
+    }
 }
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://maven.chaquopy.com" }
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.chaquopy.python'
 
 android {
     namespace 'com.shareserver.app'
