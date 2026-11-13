@@ -22,5 +22,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: List Gradle Tasks
-        run: gradle tasks
+      - name: Build with Gradle
+        run: gradle assembleDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShareServer-APK
+          path: build/outputs/apk/debug/app-debug.apk
