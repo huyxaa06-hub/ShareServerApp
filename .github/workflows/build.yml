@@ -20,4 +20,4 @@ jobs:
         java-version: '21'
 
     - name: Build with Gradle
-      run: gradle assembleDebug --stacktrace
+      run: gradle :app:assembleDebug --stacktrace
