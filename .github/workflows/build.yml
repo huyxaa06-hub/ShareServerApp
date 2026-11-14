@@ -41,21 +41,48 @@ jobs:
       run: |
         export ANDROID_HOME=$HOME/android-sdk
         
-        # Tự động tạo build.gradle ở root nếu chưa có plugin Android
-        if ! grep -q "com.android.application" build.gradle 2>/dev/null; then
-          echo "buildscript { repositories { google(); mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.2.0' } }" > build.gradle
-          echo "allprojects { repositories { google(); mavenCentral() } }" >> build.gradle
-        fi
-        
-        if ! grep -q "com.android.application" settings.gradle 2>/dev/null; then
+        # Ghi đè file build.gradle gốc với cú pháp Groovy chuẩn xác
+        cat << 'EOF' > build.gradle
+        buildscript {
+            repositories {
+                google()
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:8.2.0'
+            }
+        }
+        allprojects {
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+        EOF
+
+        # Đảm bảo settings.gradle khai báo module app
+        if ! grep -q ":app" settings.gradle 2>/dev/null; then
           echo "include ':app'" >> settings.gradle
         fi
-        
+
+        # Tạo module app chuẩn nếu chưa có
         mkdir -p app/src/main
-        if [ ! -f app/build.gradle ]; then
-          echo "plugins { id 'com.android.application' }" > app/build.gradle
-          echo "android { namespace 'com.shareserver.app'; compileSdk 34; defaultConfig { applicationId 'com.shareserver.app'; minSdk 24; targetSdk 34; versionCd 1; versionName '1.0' } }" >> app/build.gradle
-        fi
+        cat << 'EOF' > app/build.gradle
+        plugins {
+            id 'com.android.application'
+        }
+        android {
+            namespace 'com.shareserver.app'
+            compileSdk 34
+            defaultConfig {
+                applicationId 'com.shareserver.app'
+                minSdk 24
+                targetSdk 34
+                versionCode 1
+                versionName '1.0'
+            }
+        }
+        EOF
 
         gradle wrapper --gradle-version 8.5
         chmod +x gradlew
