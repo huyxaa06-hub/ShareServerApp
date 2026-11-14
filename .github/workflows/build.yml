@@ -13,11 +13,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up JDK 21
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '21'
+        java-version: '17'
 
     - name: Setup Android SDK manually
       run: |
@@ -37,59 +37,51 @@ jobs:
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-    - name: Inject Android Project Structure and Build
+    - name: Build APK Direct
       run: |
         export ANDROID_HOME=$HOME/android-sdk
         
-        # Khai báo pluginManagement chuẩn cho Gradle 8+
         cat << 'EOF' > settings.gradle
-        pluginManagement {
-            repositories {
-                google()
-                mavenCentral()
-                gradlePluginPortal()
-            }
-        }
-        dependencyResolutionManagement {
-            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-            repositories {
-                google()
-                mavenCentral()
-            }
-        }
         rootProject.name = "ShareServerApp"
         include ':app'
         EOF
 
-        # Khai báo plugin version ở root build.gradle
         cat << 'EOF' > build.gradle
-        plugins {
-            id 'com.android.application' version '8.2.0' apply false
+        buildscript {
+            repositories {
+                google()
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:7.4.2'
+            }
         }
-        EOF
-
-        # Tạo module app chuẩn
-        mkdir -p app/src/main
-        cat << 'EOF' > app/build.gradle
-        plugins {
-            id 'com.android.application'
-        }
-        android {
-            namespace 'com.shareserver.app'
-            compileSdk 34
-            defaultConfig {
-                applicationId 'com.shareserver.app'
-                minSdk 24
-                targetSdk 34
-                versionCode 1
-                versionName '1.0'
+        allprojects {
+            repositories {
+                google()
+                mavenCentral()
             }
         }
         EOF
 
-        gradle wrapper --gradle-version 8.5
+        mkdir -p app/src/main
+        cat << 'EOF' > app/build.gradle
+        apply plugin: 'com.android.application'
+        android {
+            compileSdk 34
+            defaultConfig {
+                applicationId "com.shareserver.app"
+                minSdk 24
+                targetSdk 34
+                versionCode 1
+                versionName "1.0"
+            }
+        }
+        EOF
+
+        gradle wrapper --gradle-version 7.5
         chmod +x gradlew
-        ./gradlew :app:assembleDebug --stacktrace
+        ./gradlew :app:assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
