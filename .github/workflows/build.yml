@@ -37,35 +37,36 @@ jobs:
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-    - name: Inject Android Plugin and Build
+    - name: Inject Android Project Structure and Build
       run: |
         export ANDROID_HOME=$HOME/android-sdk
         
-        # Ghi đè file build.gradle gốc với cú pháp Groovy chuẩn xác
-        cat << 'EOF' > build.gradle
-        buildscript {
+        # Cấu hình settings.gradle chuẩn Gradle 8+
+        cat << 'EOF' > settings.gradle
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
+        }
+        dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
             repositories {
                 google()
                 mavenCentral()
             }
-            dependencies {
-                classpath 'com.android.tools.build:gradle:8.2.0'
-            }
         }
-        allprojects {
-            repositories {
-                google()
-                mavenCentral()
-            }
-        }
+        rootProject.name = "ShareServerApp"
+        include ':app'
         EOF
 
-        # Đảm bảo settings.gradle khai báo module app
-        if ! grep -q ":app" settings.gradle 2>/dev/null; then
-          echo "include ':app'" >> settings.gradle
-        fi
+        # build.gradle cấp root trống hoặc chỉ chứa plugin khai báo
+        cat << 'EOF' > build.gradle
+        // Root build file
+        EOF
 
-        # Tạo module app chuẩn nếu chưa có
+        # Tạo module app chuẩn
         mkdir -p app/src/main
         cat << 'EOF' > app/build.gradle
         plugins {
