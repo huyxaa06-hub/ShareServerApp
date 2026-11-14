@@ -37,15 +37,32 @@ jobs:
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-    - name: Generate Wrapper and Build APK
+    - name: Inject Android Plugin and Build
       run: |
         export ANDROID_HOME=$HOME/android-sdk
+        
+        # Tự động tạo build.gradle ở root nếu chưa có plugin Android
+        if ! grep -q "com.android.application" build.gradle 2>/dev/null; then
+          echo "buildscript { repositories { google(); mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.2.0' } }" > build.gradle
+          echo "allprojects { repositories { google(); mavenCentral() } }" >> build.gradle
+        fi
+        
+        if ! grep -q "com.android.application" settings.gradle 2>/dev/null; then
+          echo "include ':app'" >> settings.gradle
+        fi
+        
+        mkdir -p app/src/main
+        if [ ! -f app/build.gradle ]; then
+          echo "plugins { id 'com.android.application' }" > app/build.gradle
+          echo "android { namespace 'com.shareserver.app'; compileSdk 34; defaultConfig { applicationId 'com.shareserver.app'; minSdk 24; targetSdk 34; versionCd 1; versionName '1.0' } }" >> app/build.gradle
+        fi
+
         gradle wrapper --gradle-version 8.5
         chmod +x gradlew
-        ./gradlew assembleDebug --stacktrace
+        ./gradlew :app:assembleDebug --stacktrace
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: ShareServer-APK
-        path: build/outputs/apk/debug/app-debug.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
