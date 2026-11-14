@@ -41,7 +41,7 @@ jobs:
       run: |
         export ANDROID_HOME=$HOME/android-sdk
         
-        # Cấu hình settings.gradle chuẩn Gradle 8+
+        # Khai báo pluginManagement chuẩn cho Gradle 8+
         cat << 'EOF' > settings.gradle
         pluginManagement {
             repositories {
@@ -61,9 +61,11 @@ jobs:
         include ':app'
         EOF
 
-        # build.gradle cấp root trống hoặc chỉ chứa plugin khai báo
+        # Khai báo plugin version ở root build.gradle
         cat << 'EOF' > build.gradle
-        // Root build file
+        plugins {
+            id 'com.android.application' version '8.2.0' apply false
+        }
         EOF
 
         # Tạo module app chuẩn
